@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE faces-config PUBLIC "-//Sun Microsystems, Inc.//DTD  
+  JavaServer Faces Config 1.1//EN" "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">  
+  
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">  
+    <application>  
+        <locale-config>  
+            <default-locale>es</default-locale>  
+            <supported-locale>en</supported-locale>  
+        </locale-config>  
+  
+      <view-handler>com.icesoft.faces.facelets.D2DFaceletViewHandler</view-handler>  
+        <variable-resolver>org.springframework.web.jsf.DelegatingVariableResolver</variable-resolver>  
+    </application>  
+  
+    <!-- 
+        | ================= Navigation rules ================= 
+    -->  
+    <navigation-rule>  
+        <navigation-case>  
+            <from-outcome>home</from-outcome>  
+            <to-view-id>/listCustomer.jspx</to-view-id>  
+        </navigation-case>  
+    </navigation-rule>  
+  
+    <navigation-rule>  
+        <from-view-id>/listCustomer.jspx</from-view-id>  
+        <navigation-case>  
+            <from-outcome>editCustomer</from-outcome>  
+            <to-view-id>/editCustomer.jspx</to-view-id>  
+        </navigation-case>  
+    </navigation-rule>  
+  
+</faces-config>  
