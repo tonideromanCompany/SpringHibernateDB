@@ -28,6 +28,10 @@ public class CustomerService {
 	 return repository.getCustomersbyID(IDemployee);
 	 }
  
+ public List<Customer> getCustomersbyLimit(int IDemployee, int first, int last) {
+	 return repository.getCustomersbyLimit(IDemployee, first, last);
+	 }
+ 
  public void createCustomer(Customer customer) {
  repository.createCustomer(customer);
  }

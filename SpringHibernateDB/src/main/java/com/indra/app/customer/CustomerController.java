@@ -12,11 +12,11 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
 
-import com.indra.app.customer.Customer.Gender;
 import com.indra.app.employee.*;
 import com.indra.app.adresses.*;
 
@@ -29,13 +29,13 @@ import com.indra.app.adresses.*;
 @Controller
 public class CustomerController {
 
- private static final Gender MALE = null;
 Employee currentemployee;
  EmployeeAdress currentemployeeadress;
  CorporationAdress currentcorporationadress;
 
  MessageDigest md;
  byte[] bytesOfPass;
+ int nposition, initialpage, nregistros;
 
  
  @Autowired
@@ -51,7 +51,11 @@ Employee currentemployee;
  @RequestMapping(value = {"/*", "/employees"}, method = RequestMethod.GET)
  public String getEmployees(Model model) throws NoSuchAlgorithmException, UnsupportedEncodingException {
  model.addAttribute("employeelog", new EmployeeLogin());
+ //Default Values
  setDBValues();
+ nposition = 1; 
+ initialpage = 1;
+ nregistros=12;
  return "employees";
  }
  
@@ -164,7 +168,25 @@ Employee currentemployee;
  public String getCustomers(Model model) {
  model.addAttribute("currentemployee", currentemployee);
  List<Customer> customers = custservice.getCustomersbyID(currentemployee.getID());
- model.addAttribute("customers", customers);
+ //AQUI EMPIEZA LA FUNCION DE PAGINACION
+ int n = customers.size();
+ int npages = (n/nregistros)+1;
+ model.addAttribute("firstpage", nposition);
+ model.addAttribute("secondpage", nposition+1);
+ model.addAttribute("thirdpage", nposition+2);
+ //model.addAttribute("nposition",nposition);
+ switch(nposition){
+ case 1: model.addAttribute("state1","active"); model.addAttribute("state2","inactive"); model.addAttribute("state3","inactive"); break;
+ case 2: model.addAttribute("state1", "inactive"); model.addAttribute("state2","active"); model.addAttribute("state3","inactive"); break;
+ case 3: model.addAttribute("state1", "inactive"); model.addAttribute("state2","inactive"); model.addAttribute("state3","active"); break;
+ default: model.addAttribute("state1","inactive"); model.addAttribute("state2","inactive"); model.addAttribute("state3","inactive"); break;
+ }
+ model.addAttribute("npages", npages);
+ if(customers.size()!=0){
+ List<Customer> listing = custservice.getCustomersbyLimit(currentemployee.getID(), nregistros*(nposition-1), nregistros*nposition);
+ model.addAttribute("listing",listing);
+ }
+//FIN FUNCION DE PAGINACION
  return "customers";
  }
  
@@ -180,7 +202,7 @@ Employee currentemployee;
 		 return "add-customer";
 	 }
 	 customer.setIDEmployee(currentemployee.getID());
-	 custservice.createCustomer(customer);
+	 defaultCreation(customer);
 	 return "redirect:personalpage";
  }
  
@@ -200,6 +222,81 @@ Employee currentemployee;
 	 }
 	 return hashtext;
  }
+ 
+ /*public List<Customer> Pagination(List<Customer> customers, Model model, int nregistros){
+	 List<Customer> sendinglist;
+	 int n = customers.size();
+	 int npages = (n/nregistros);
+	 
+	 //model.addAttribute("message", "numero de paginas = "+npages);
+	 model.addAttribute("firstpage", nposition);
+	 model.addAttribute("secondpage", nposition+1);
+	 model.addAttribute("thirdpage", nposition+2);
+	 //model.addAttribute("nposition",nposition);
+	 switch(nposition){
+	 case 1: model.addAttribute("state1","active"); model.addAttribute("state2","inactive"); model.addAttribute("state3","inactive");
+	 case 2: model.addAttribute("state1", "inactive"); model.addAttribute("state2","active"); model.addAttribute("state3","inactive");
+	 case 3: model.addAttribute("state1", "inactive"); model.addAttribute("state2","inactive"); model.addAttribute("state3","active");
+	 default: model.addAttribute("state1","inactive"); model.addAttribute("state2","inactive"); model.addAttribute("state3","inactive");
+	 }
+
+	/* if(nposition==npages){
+		 model.addAttribute("firstpage", nposition-2);
+		 model.addAttribute("secondpage", nposition-1);
+		 model.addAttribute("thirdpage", nposition);
+	 }
+	 else if(nposition==npages-1){
+		 model.addAttribute("firstpage", nposition-1);
+		 model.addAttribute("secondpage", nposition);
+		 model.addAttribute("thirdpage", nposition+1);
+	 }
+	 else {
+		 model.addAttribute("firstpage", nposition);
+		 model.addAttribute("secondpage", nposition+1);
+		 model.addAttribute("thirdpage", nposition+2);
+	 }
+	 for (int i = nregistros*(nposition-1); i<nregistros*nposition;i++) {
+		 sendinglist.add(customers.get(i));
+	 }
+	 
+	 return sendinglist;
+	 /*
+	  * Pagination is in groups of three, we need to contemplate what happen when the user arrive at last of each three, 
+	  * then we'll go to next group
+	  * npages/3=nthreesome; --> nthreesome indicates in which group of three we are.
+	  * Look up where we are
+	  * if(ntrio!=1)
+	  * 	model.addAttribute("firtspag",nthreesome);
+	  * 	model.addAttribute("secondpag",nthreesome++);
+	  * 	model.addAttribute("thirdpag",nthreesome++);
+	  * 	nthreesome, nthreesome++, nthreesome++ --> we'll be the pages
+	  * else { --> Only in the first group, the start is in the position(nthreesome) of the group, 
+	  * 	   --> after we always start in position(nthreesome)+1
+	  * 	model.addAttribute("firtspag",nthreesome);
+	  * 	model.addAttribute("secondpag",nthreesome++);
+	  * 	model.addAttribute("thirdpag",nthreesome++);
+	  * 	nthreesome++, nthreesome++, nthreesome++ --> we'll be the pages
+	  * }
+	  * if(recibo n) {
+	  * 	Muestrame desde 14*(n-1) hasta 14*n
+	  * 	i=n;
+	  * 	case i = active;
+	  * 	resto = inactives;
+	  * }
+	  * if(recibo forward) {
+	  * 	Miro el valor de i, le hago ++
+	  * 	i=n;
+	  * 	Muestrame desde 14*(n-1) hasta 14*n
+	  * 	Case i = active;
+	  * }
+	  * if(recibo backward) {
+	  * 	Miro el valor de i, le hago --
+	  *	 	i=n;
+	  * 	Muestrame desde 14*(n-1) hasta 14*n
+	  * 	Case i = active;
+	  * }
+	  
+ }*/
  
  //PREDETERMINATE DB VALUES
  public void setDBValues() throws NoSuchAlgorithmException, UnsupportedEncodingException {
@@ -275,5 +372,18 @@ Employee currentemployee;
 	 corpad3.setCountry("Spain");
 	 corpservice.createCorporationAdress(corpad3);
 		}
+ }
+ 
+ public void defaultCreation(Customer customer){
+	 custservice.createCustomer(customer);
+	 custservice.createCustomer(customer);
+	 custservice.createCustomer(customer);
+	 custservice.createCustomer(customer);
+	 custservice.createCustomer(customer);
+	 custservice.createCustomer(customer);
+	 custservice.createCustomer(customer);
+	 custservice.createCustomer(customer);
+	 custservice.createCustomer(customer);
+	 custservice.createCustomer(customer);
  }
 }

@@ -19,6 +19,11 @@ html, body {
 	 margin-top: 40px; 
 }
 
+#wrapp {
+	margin-left: 10px;
+}
+
+
 #logbox {
 	 border: 5px #d1d0cd solid;  
 	 border-radius: 6px;  
@@ -67,6 +72,10 @@ html, body {
   margin-top: -0.2em;
   padding: 0.3em;
   float: right;	
+}
+
+.pagination {
+	margin-left: 10px;
 }
 
 .navbar {

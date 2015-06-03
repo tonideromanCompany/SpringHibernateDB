@@ -37,6 +37,16 @@ public class CustomerRepository {
   .list();
  }
  
+ @SuppressWarnings("unchecked")
+ public List<Customer> getCustomersbyLimit(int IDemployee, int first, int last) {
+	 return sessionFactory.getCurrentSession()
+		.createQuery("FROM Customer c WHERE idemployee=:ID")
+		.setInteger("ID", IDemployee)
+		.setFirstResult(first)
+		.setMaxResults(last)
+		.list();
+ }
+ 
  public void createCustomer(Customer customer) {
  sessionFactory.getCurrentSession().save(customer);
  }
