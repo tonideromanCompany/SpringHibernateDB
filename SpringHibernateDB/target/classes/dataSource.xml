@@ -17,11 +17,19 @@
   </list>
  </property>
  <property name="hibernateProperties">
-  <props>
-  <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+  <props>  
+   <prop key="javax.persistence.jdbc.driver">org.hsqldb.jdbcDriver</prop>
+   <prop key="javax.persistence.jdbc.url">jdbc:hsqldb:.</prop>
+    <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
   <prop key="hibernate.hbm2ddl.auto">update</prop>
   <prop key="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</prop>
-   <prop key="hibernate.connection.url">jdbc:hsqldb:file:~/SpringHibernateDB</prop>
+   <prop key="hibernate.connection.url">jdbc:hsqldb:file:DBApp</prop>
+       
+   <!-- cache configuration -->
+   <prop key="hibernate.ejb.classcache.org.hibernate.ejb.test.Item">read-write</prop>
+   <prop key="hibernate.ejb.collectioncache.org.hibernate.ejb.test.Item.distributors">read-write, RegionName</prop>
+   
+   
   </props>
   <!-- Validate: validate the schema, makes no change in the database
   	   Update: update the schema

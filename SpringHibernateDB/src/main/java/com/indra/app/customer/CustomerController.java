@@ -3,7 +3,6 @@ package com.indra.app.customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +16,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.indra.app.customer.Customer.Gender;
 import com.indra.app.employee.*;
+import com.indra.app.adresses.*;
 
 /**
  * 
@@ -28,7 +29,10 @@ import com.indra.app.employee.*;
 @Controller
 public class CustomerController {
 
- Employee currentemployee;
+ private static final Gender MALE = null;
+Employee currentemployee;
+ EmployeeAdress currentemployeeadress;
+ CorporationAdress currentcorporationadress;
 
  MessageDigest md;
  byte[] bytesOfPass;
@@ -38,17 +42,22 @@ public class CustomerController {
  protected CustomerService custservice;
  @Autowired
  protected EmployeeService empservice;
+ @Autowired
+ protected CorporationAdressService corpservice;
+ @Autowired
+ protected EmployeeAdressService empadservice;
  
 
  @RequestMapping(value = {"/*", "/employees"}, method = RequestMethod.GET)
- public String getEmployees(Model model) {
+ public String getEmployees(Model model) throws NoSuchAlgorithmException, UnsupportedEncodingException {
  model.addAttribute("employeelog", new EmployeeLogin());
+ setDBValues();
  return "employees";
  }
  
  @RequestMapping(value = "employees", method = RequestMethod.POST)
  public String getEmployeePost(@ModelAttribute("employeelog") EmployeeLogin employeelog, Model model) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-	List<Employee> EmployeeLog = empservice.getEmployeesLogin(employeelog.getCorporation(),employeelog.getUser());
+	List<Employee> EmployeeLog = empservice.getEmployeesLogin(employeelog.getUser());
 	if(EmployeeLog.size()==1)
 		currentemployee=EmployeeLog.get(0);
 	else
@@ -89,20 +98,71 @@ public class CustomerController {
  
  @RequestMapping(value="/personalpage")
  public String getPersonalInfo(Model model) {
-	 model.addAttribute("currentemployeeC",currentemployee.getCorporation());
-	 model.addAttribute("currentemployeeN",currentemployee.getName());
-	 model.addAttribute("currentemployeeS",currentemployee.getSurname());
-	 model.addAttribute("currentemployeeE",currentemployee.getUser());
-	 model.addAttribute("currentemployeeR",currentemployee.getRole());
-	 model.addAttribute("currentemployeeP",currentemployee.getPhone());
+	 model.addAttribute("currentemployee",currentemployee);
+	 List<EmployeeAdress> employeeadress = empadservice.getEmplyoyeeAdressbyID(currentemployee.getID());
+	 if(employeeadress.size()==1){
+	 currentemployeeadress = employeeadress.get(0);
+	 model.addAttribute("employeeadress", currentemployeeadress);
+	 }
+	 else{
+		 currentemployeeadress=null;
+		 model.addAttribute("employeeadress", currentemployeeadress);
+	 }
+	 List<CorporationAdress> corporationadress = corpservice.getCorporationAdressbyCorporation(currentemployee.getCorporation());
+	 if(corporationadress.size()==1)
+	 currentcorporationadress = corporationadress.get(0);
+	 model.addAttribute("corporationadress", currentcorporationadress);
 	 return "personalpage";
+ }
+ 
+ @RequestMapping(value = "personalpage-edit")
+ public String addAdressGet(Model model) {
+ model.addAttribute("employeeadressGET", new EmployeeAdress());
+ model.addAttribute("employeeadress", currentemployeeadress);
+ model.addAttribute("corporationadress", currentcorporationadress);
+ model.addAttribute("currentemployee", currentemployee);
+ return "personalpage-edit";
+ }
+ 
+ 
+ @RequestMapping(value = "personalpage-edit", method = RequestMethod.POST)
+ public String addAdressPost(@ModelAttribute("employeeadressGET") @Valid EmployeeAdress employeeadress, 
+		  BindingResult bindingresult, Model model) {
+	 if(bindingresult.hasErrors()){
+		 return "personalpage-edit";
+	 }
+	 employeeadress.setIDemployee(currentemployee.getID());
+	 empadservice.updateEmployeeAdress(employeeadress);	 
+	 currentemployeeadress = employeeadress;
+	 return "redirect:personalpage";
+ }
+ 
+ @RequestMapping(value = "personalpage-editinfo")
+ public String addInfoGet(Model model) {
+ model.addAttribute("employeeGET", new EmployeeUpdate());
+ model.addAttribute("employeeadress", currentemployeeadress);
+ model.addAttribute("corporationadress", currentcorporationadress);
+ model.addAttribute("currentemployee", currentemployee);
+ return "personalpage-editinfo";
+ }
+ 
+ 
+ @RequestMapping(value = "personalpage-editinfo", method = RequestMethod.POST)
+ public String addInfoPost(@ModelAttribute("employeeGET") @Valid EmployeeUpdate employeeupdate, BindingResult bindingresult, Model model) {
+	 if(bindingresult.hasErrors()){
+		 return "personalpage-editinfo";
+	 }
+	 currentemployee.setName(employeeupdate.getName());
+	 currentemployee.setSurname(employeeupdate.getSurname());
+	 currentemployee.setUser(employeeupdate.getUser());
+	 currentemployee.setPhone(employeeupdate.getPhone());
+	 empservice.updateEmployee(currentemployee);
+	 return "redirect:personalpage";
  }
  
  @RequestMapping(value = "/customers", method = RequestMethod.GET)
  public String getCustomers(Model model) {
- model.addAttribute("EmployeeName", currentemployee.getName());
- model.addAttribute("EmployeeRole", currentemployee.getRole());
- model.addAttribute("EmployeeCorporation", currentemployee.getCorporation());
+ model.addAttribute("currentemployee", currentemployee);
  List<Customer> customers = custservice.getCustomersbyID(currentemployee.getID());
  model.addAttribute("customers", customers);
  return "customers";
@@ -139,5 +199,81 @@ public class CustomerController {
 		 hashtext = "0"+hashtext;
 	 }
 	 return hashtext;
+ }
+ 
+ //PREDETERMINATE DB VALUES
+ public void setDBValues() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+	 List<CorporationAdress> CorpAdList = corpservice.getCorporationAdressbyCorporation("Indra Software Labs S.L.");
+		if(CorpAdList.size()==1){
+		}
+		else{
+			//First Employee
+	 Employee employee = new Employee();
+	 employee.setCorporation("Indra Software Labs S.L.");
+	 employee.setUser("antonio@indra.es");
+	 employee.setName("Antonio");
+	 employee.setSurname("De Roman Martinez");
+	 employee.setPassword(ReturnedHash("antonio"));
+	 employee.setPassword2(ReturnedHash("antonio"));
+	 employee.setPhone("685 789 458");
+	 employee.setRole("Developer");
+	 empservice.createEmployee(employee);
+	 
+		    //Second Employee
+	 Employee employee2 = new Employee();
+	 employee2.setCorporation("Repsol S.A.");
+	 employee2.setUser("alvaro@repsol.es");
+	 employee2.setName("Alvaro");
+	 employee2.setSurname("Garcia Errejon");
+	 employee2.setPassword(ReturnedHash("alvaro"));
+	 employee2.setPassword2(ReturnedHash("alvaro"));
+	 employee2.setPhone("654 079 564");
+	 employee2.setRole("Developer Pro");
+	 empservice.createEmployee(employee2);
+	 
+	 	   //Third Employee
+	 Employee employee3 = new Employee();
+	 employee3.setCorporation("Deloitte S.L.");
+	 employee3.setUser("vicente@deloitte.es");
+	 employee3.setName("Vicente");
+	 employee3.setSurname("Cervera Sanchez");
+	 employee3.setPassword(ReturnedHash("vicente"));
+	 employee3.setPassword2(ReturnedHash("vicente"));
+	 employee3.setPhone("678 459 248");
+	 employee3.setRole("Executive");
+	 empservice.createEmployee(employee3);
+			
+			//Indra Lleida
+	 CorporationAdress corpad = new CorporationAdress();
+	 corpad.setCorporation("Indra Software Labs S.L.");
+	 corpad.setOffice("Lleida-Parque Gardeny");
+	 corpad.setDepartment("Software Labs");
+	 corpad.setAdress("Parque de Gardeny, Edifio 28");
+	 corpad.setCity("Lleida");
+	 corpad.setPostalcode("25071");
+	 corpad.setCountry("Spain");
+	 corpservice.createCorporationAdress(corpad);
+	 		//Repsol Madrid
+	 CorporationAdress corpad2 = new CorporationAdress();
+	 corpad2.setCorporation("Repsol S.A.");
+	 corpad2.setOffice("Campus Repsol");
+	 corpad2.setDepartment("Informatica Aplicada");
+	 corpad2.setAdress("Calle de Mendez Alvaro, 44");
+	 corpad2.setCity("Madrid");
+	 corpad2.setPostalcode("28045");
+	 corpad2.setCountry("Spain");
+	 corpservice.createCorporationAdress(corpad2);
+	 
+	 		//Deloitte Barcelona
+	 CorporationAdress corpad3 = new CorporationAdress();
+	 corpad3.setCorporation("Deloitte S.L.");
+	 corpad3.setOffice("Barcelona-Parque Empresarial");
+	 corpad3.setDepartment("Consulting Labs");
+	 corpad3.setAdress("Parque Empresarial Metrovacesa 22, Edificio D, 3ª planta");
+	 corpad3.setCity("Barcelona");
+	 corpad3.setPostalcode("08034");
+	 corpad3.setCountry("Spain");
+	 corpservice.createCorporationAdress(corpad3);
+		}
  }
 }

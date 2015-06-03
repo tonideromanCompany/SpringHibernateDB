@@ -11,31 +11,110 @@
 <div class="col-md-6 col-md-offset-3">
 <div class="panel panel-default" id="wrapper">
 	<!-- Default panel contents -->
-	<div class="panel-heading"><strong>Personal Page</strong></div>
-		<table class="table">
+	<div class="panel-heading">
+		<h3 class="panel-tittle">
+			<span class="glyphicon glyphicon-user"></span>
+			<strong>Personal Info</strong>
+			<a href="<c:url value="personalpage-editinfo"/>"  class="panel-right btn bnt-default glyphicon glyphicon-pencil"></a>
+		</h3> 
+	</div>
+		<table class="table table-bordered">
 			<tr>
 				<th>Company</th>
-				<td><c:forEach items="${currentemployeeC}" var="currentemployeeC">${currentemployeeC}</c:forEach></td>
+				<td>${currentemployee.corporation}</td>
 			</tr>
 			<tr>
 				<th>Name</th>
-				<td><c:forEach items="${currentemployeeN}" var="currentemployeeN">${currentemployeeN}</c:forEach></td>
+				<td>${currentemployee.name}</td>
 			</tr>
 			<tr>
 				<th>Surname</th>
-				<td><c:forEach items="${currentemployeeS}" var="currentemployeeS">${currentemployeeS}</c:forEach></td>
+				<td>${currentemployee.surname}</td>
 			</tr>
 			<tr>
 				<th>Email</th>
-				<td><c:forEach items="${currentemployeeE}" var="currentemployeeE">${currentemployeeE}</c:forEach></td>
+				<td>${currentemployee.user}</td>
 			</tr>
 			<tr>
 				<th>Role</th>
-				<td><c:forEach items="${currentemployeeR}" var="currentemployeeR">${currentemployeeR}</c:forEach></td>
+				<td>${currentemployee.role}</td>
 			</tr>
 			<tr>
 				<th>Phone</th>
-				<td><c:forEach items="${currentemployeeP}" var="currentemployeeP">${currentemployeeP}</c:forEach></td>
+				<td>${currentemployee.phone}</td>
+			</tr>
+		</table>
+</div>
+</div>
+
+<div class="col-md-6 col-md-offset-3">
+<div class="panel panel-default" id="wrapper">
+	<!-- Default panel contents -->
+	<div class="panel-heading">
+		<h3 class="panel-tittle">
+			<span class="glyphicon glyphicon-home"></span>
+			<strong>Personal Adress</strong>
+			<a href="<c:url value="personalpage-edit"/>"  class="panel-right btn bnt-default glyphicon glyphicon-pencil"></a>
+		</h3> 
+	</div>
+		<table class="table table-bordered">
+			<tr>
+				<th>Address</th>
+				<td>${employeeadress.adress}</td>
+			</tr>
+			<tr>
+				<th>City</th>
+				<td>${employeeadress.city}</td>
+			</tr>
+			<tr>
+				<th>Postal Code</th>
+				<td>${employeeadress.postalcode}</td>
+			</tr>
+			<tr>
+				<th>Country</th>
+				<td>${employeeadress.country}</td>
+			</tr>
+		</table>
+</div>
+</div>
+
+<div class="col-md-6 col-md-offset-3">
+<div class="panel panel-default" id="wrapper">
+	<!-- Default panel contents -->
+	<div class="panel-heading">
+		<h3 class="panel-tittle">
+			<span class="glyphicon glyphicon-briefcase"></span>
+			<strong>Corporation Address</strong>
+		</h3> 
+	</div>
+		<table class="table table-bordered">
+			<tr>
+				<th>Corporation</th>
+				<td>${corporationadress.corporation}</td>
+			</tr>
+			<tr>
+				<th>Office</th>
+				<td>${corporationadress.office}</td>
+			</tr>
+			<tr>
+				<th>Department</th>
+				<td>${corporationadress.department}</td>
+			</tr>
+			<tr>
+				<th>Address</th>
+				<td>${corporationadress.adress}</td>
+			</tr>
+			<tr>
+				<th>City</th>
+				<td>${corporationadress.city}</td>
+			</tr>
+			<tr>
+				<th>Postal Code</th>
+				<td>${corporationadress.postalcode}</td>
+			</tr>
+			<tr>
+				<th>Country</th>
+				<td>${corporationadress.country}</td>
 			</tr>
 		</table>
 </div>

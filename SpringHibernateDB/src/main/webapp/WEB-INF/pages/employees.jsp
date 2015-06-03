@@ -28,21 +28,9 @@
 <p></p>
 <div class="col-xs-4 col-xs-offset-4">
 <p></p>
-<div id="wrapper" class="panel panel-primary">
+<div id="logbox" class="panel panel-primary">
 <!-- Default panel contents -->
 <div class="panel-heading" align="center"><h4><strong>Corporative Access</strong></h4></div>
-<p></p>
-<div class="row">
-<div class="col-xs-8 col-xs-offset-2">
-<p></p>
-<div class="form-group-center">
-    <div class="input-group">
-  	<span class="input-group-addon"><span class="glyphicon glyphicon-home"></span></span>
-  	<form:input type="text" class="form-control" path="corporation" />
-	</div>
-	</div>
-	</div>
-	</div>
 	<p></p>
 	<div class="row">
 	<div class="col-xs-8 col-xs-offset-2">
@@ -70,7 +58,6 @@
 	<div class="col-xs-8 col-xs-offset-2">
 <div class="btn-group-sm">
 	<input type="submit" class="btn btn-primary" value="Login" id="addcustbut"/>
-	<a href="<c:url value="add-employee"/>" class="btn btn-default" id="addcustbut">Add Employee</a>
 	<p></p>
 	</div>
 	</div>

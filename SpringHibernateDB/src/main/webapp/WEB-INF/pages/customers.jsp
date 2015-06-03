@@ -11,7 +11,7 @@
 <div class="panel panel-default" id="custwrapp">
   <!-- Default panel contents -->
   <div class="panel-heading">
-  <c:forEach items="${EmployeeName}" var="EmployeeName"><strong>${EmployeeName}</strong></c:forEach><c:forEach items="${EmployeeRole}" var="EmployeeRole"><strong>: </strong>${EmployeeRole}</c:forEach><c:forEach items="${EmployeeCorporation}" var="EmployeeCorporation"> from ${EmployeeCorporation}</c:forEach></div>
+  <strong>${currentemployee.name}</strong> <strong>${currentemployee.surname}</strong><strong>: </strong>${currentemployee.role} from ${currentemployee.corporation}</div>
   
   <!-- Table -->
   <table class="table">

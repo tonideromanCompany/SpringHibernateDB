@@ -33,11 +33,11 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav nav-pills nav-justified">
-        <li class="active"><a href="<c:url value="personalpage"/>">Home <span class="sr-only">(current)</span></a></li>
+        <li class="inactive"><a href="<c:url value="personalpage"/>">Home <span class="sr-only">(current)</span></a></li>
         <li><a href="<c:url value="add-customer"/>">Add Customer</a></li>
         <li><a href="<c:url value="customers"/>">My Customers</a></li>
         <li><a href="<c:url value="search"/>">Search</a></li>
-        <li><a href="<c:url value="add-employee"/>">Add Employee</a></li>
+        <li class="disabled">Add Employee</li>
         <li><a href="<c:url value="employees"/>">Shut Down</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->

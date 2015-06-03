@@ -30,12 +30,10 @@ public class EmployeeRepository {
  }
  
  @SuppressWarnings("unchecked")
- public List<Employee> getEmployeesLogin(String corp, String user) {
+ public List<Employee> getEmployeesLogin(String user) {
  return sessionFactory.getCurrentSession()
- 		 .createQuery("FROM Employee e WHERE corporation=:corporation AND user=:user" )
- 		 .setString("corporation",corp)
+ 		 .createQuery("FROM Employee e WHERE user=:user" )
  		 .setString("user",user)
- 		 //.setString("password",pass)
  		 .list();
  }
  
@@ -50,5 +48,9 @@ public class EmployeeRepository {
  
  public void createEmployee(Employee employee) {
  sessionFactory.getCurrentSession().save(employee);
+ }
+ 
+ public void updateEmployee(Employee employee) {
+	 sessionFactory.getCurrentSession().saveOrUpdate(employee);
  }
 }

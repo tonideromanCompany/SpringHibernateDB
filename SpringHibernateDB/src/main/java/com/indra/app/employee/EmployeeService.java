@@ -21,8 +21,8 @@ public class EmployeeService {
  return repository.getEmployees();
  }
  
- public List<Employee> getEmployeesLogin(String corp, String user) {
- return repository.getEmployeesLogin(corp, user);
+ public List<Employee> getEmployeesLogin(String user) {
+ return repository.getEmployeesLogin(user);
  }
  
  public List<Employee> getEmployeesName(int ID) {
@@ -31,6 +31,10 @@ public class EmployeeService {
  
  public void createEmployee(Employee employee) {
  repository.createEmployee(employee);
+ }
+ 
+ public void updateEmployee(Employee employee) {
+	 repository.updateEmployee(employee);
  }
 }
 

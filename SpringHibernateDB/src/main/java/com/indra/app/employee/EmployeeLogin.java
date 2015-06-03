@@ -10,22 +10,11 @@ public class EmployeeLogin {
 	
 
 	
-	private String corporation;
-
-	
 	private String user;
 	
 	
 	private String password;
 	
-	
-	public String getCorporation() {
-		return corporation;
-	}
-	
-	public void setCorporation(String corporation){
-		this.corporation = corporation;
-	}
 	
 	public String getUser() {
 		return user;
