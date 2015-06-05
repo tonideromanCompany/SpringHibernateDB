@@ -1,24 +1,37 @@
 package com.indra.app.customer;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
+import java.beans.PropertyEditorSupport;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
 
-import com.indra.app.employee.*;
-import com.indra.app.adresses.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.indra.app.adresses.CorporationAdress;
+import com.indra.app.adresses.CorporationAdressService;
+import com.indra.app.adresses.EmployeeAdress;
+import com.indra.app.adresses.EmployeeAdressService;
+import com.indra.app.employee.Employee;
+import com.indra.app.employee.EmployeeLogin;
+import com.indra.app.employee.EmployeeService;
+import com.indra.app.employee.EmployeeUpdate;
+import com.indra.app.search.SearchFields;
 
 /**
  * 
@@ -29,13 +42,15 @@ import com.indra.app.adresses.*;
 @Controller
 public class CustomerController {
 
-Employee currentemployee;
+ public static final int NUMREGIST = 12;
+ Employee currentemployee;
  EmployeeAdress currentemployeeadress;
  CorporationAdress currentcorporationadress;
+ SearchFields currentsfield;
 
  MessageDigest md;
  byte[] bytesOfPass;
- int nposition, initialpage, nregistros;
+ int nposition, initialpage, nbutton;
 
  
  @Autowired
@@ -51,11 +66,6 @@ Employee currentemployee;
  @RequestMapping(value = {"/*", "/employees"}, method = RequestMethod.GET)
  public String getEmployees(Model model) throws NoSuchAlgorithmException, UnsupportedEncodingException {
  model.addAttribute("employeelog", new EmployeeLogin());
- //Default Values
- setDBValues();
- nposition = 1; 
- initialpage = 1;
- nregistros=12;
  return "employees";
  }
  
@@ -78,6 +88,7 @@ Employee currentemployee;
  
  @RequestMapping(value = "add-employee")
  public String addEmployeeGet(Model model) {
+ model.addAttribute("stateAE","active");
  model.addAttribute("employee", new Employee());
  return "add-employee";
  }
@@ -102,6 +113,7 @@ Employee currentemployee;
  
  @RequestMapping(value="/personalpage")
  public String getPersonalInfo(Model model) {
+	 model.addAttribute("stateH","active");
 	 model.addAttribute("currentemployee",currentemployee);
 	 List<EmployeeAdress> employeeadress = empadservice.getEmplyoyeeAdressbyID(currentemployee.getID());
 	 if(employeeadress.size()==1){
@@ -121,6 +133,7 @@ Employee currentemployee;
  
  @RequestMapping(value = "personalpage-edit")
  public String addAdressGet(Model model) {
+ model.addAttribute("stateH","active");
  model.addAttribute("employeeadressGET", new EmployeeAdress());
  model.addAttribute("employeeadress", currentemployeeadress);
  model.addAttribute("corporationadress", currentcorporationadress);
@@ -143,6 +156,7 @@ Employee currentemployee;
  
  @RequestMapping(value = "personalpage-editinfo")
  public String addInfoGet(Model model) {
+ model.addAttribute("stateH","active");
  model.addAttribute("employeeGET", new EmployeeUpdate());
  model.addAttribute("employeeadress", currentemployeeadress);
  model.addAttribute("corporationadress", currentcorporationadress);
@@ -165,33 +179,48 @@ Employee currentemployee;
  }
  
  @RequestMapping(value = "/customers", method = RequestMethod.GET)
- public String getCustomers(Model model) {
+ public String getCustomers(@RequestParam(value="page") int nposition, Model model) {
+ model.addAttribute("stateC","active");
  model.addAttribute("currentemployee", currentemployee);
  List<Customer> customers = custservice.getCustomersbyID(currentemployee.getID());
- //AQUI EMPIEZA LA FUNCION DE PAGINACION
- int n = customers.size();
- int npages = (n/nregistros)+1;
- model.addAttribute("firstpage", nposition);
- model.addAttribute("secondpage", nposition+1);
- model.addAttribute("thirdpage", nposition+2);
- //model.addAttribute("nposition",nposition);
- switch(nposition){
- case 1: model.addAttribute("state1","active"); model.addAttribute("state2","inactive"); model.addAttribute("state3","inactive"); break;
- case 2: model.addAttribute("state1", "inactive"); model.addAttribute("state2","active"); model.addAttribute("state3","inactive"); break;
- case 3: model.addAttribute("state1", "inactive"); model.addAttribute("state2","inactive"); model.addAttribute("state3","active"); break;
- default: model.addAttribute("state1","inactive"); model.addAttribute("state2","inactive"); model.addAttribute("state3","inactive"); break;
- }
- model.addAttribute("npages", npages);
- if(customers.size()!=0){
- List<Customer> listing = custservice.getCustomersbyLimit(currentemployee.getID(), nregistros*(nposition-1), nregistros*nposition);
- model.addAttribute("listing",listing);
- }
-//FIN FUNCION DE PAGINACION
+ Pagination(model, customers, nposition);
  return "customers";
+ }
+ 
+ @RequestMapping(value = "search", method = RequestMethod.GET)
+ public String getSearch(Model model) {
+	 model.addAttribute("stateS","active");
+	 model.addAttribute("currentemployee", currentemployee);
+	 model.addAttribute("Searchfields", new SearchFields());
+	 return "search";
+ }
+ 
+ @RequestMapping(value = "search", method = RequestMethod.POST)
+ public String doSearch(@ModelAttribute("Searchfields") SearchFields sfields, Model model) {
+ model.addAttribute("currentemployee", currentemployee);
+ if(sfields!=null){
+	 if(sfields.getByname()!=null && sfields.getByage()==0){
+		 List<Customer> searching = custservice.getCustomersbyName(currentemployee.getID(), sfields.getByname());
+		 if(searching.size()!=0)
+			 model.addAttribute("searching", searching);
+	 }
+	 else if(sfields.getByage()!=0 && sfields.getByname()==null) {
+		 List<Customer> searching = custservice.getCustomersbyAge(currentemployee.getID(), sfields.getByage());
+		 if(searching.size()!=0)
+			 model.addAttribute("searching", searching);
+	 }
+	 else {
+		 List<Customer> searching = custservice.getCustomersbyNameAge(currentemployee.getID(), sfields.getByname(), sfields.getByage());
+		 if(searching.size()!=0)
+			 model.addAttribute("searching", searching);
+	 }
+	 }
+ return "search";
  }
  
  @RequestMapping(value = "add-customer")
  public String addCustomerGet(Model model) {
+ model.addAttribute("stateAC","active");
  model.addAttribute("customer", new Customer());
  return "add-customer";
  }
@@ -202,7 +231,7 @@ Employee currentemployee;
 		 return "add-customer";
 	 }
 	 customer.setIDEmployee(currentemployee.getID());
-	 defaultCreation(customer);
+	 custservice.createCustomer(customer);
 	 return "redirect:personalpage";
  }
  
@@ -223,167 +252,44 @@ Employee currentemployee;
 	 return hashtext;
  }
  
- /*public List<Customer> Pagination(List<Customer> customers, Model model, int nregistros){
-	 List<Customer> sendinglist;
+ public void Pagination(Model model, List<Customer> customers, int nposition){
 	 int n = customers.size();
-	 int npages = (n/nregistros);
-	 
-	 //model.addAttribute("message", "numero de paginas = "+npages);
+	 int npages = (n/CustomerController.NUMREGIST)+1;
+	 int ncustomers;
+	 if(customers.size()==0)
+		 ncustomers=0;
+	 else
+		 ncustomers = customers.size();
 	 model.addAttribute("firstpage", nposition);
-	 model.addAttribute("secondpage", nposition+1);
-	 model.addAttribute("thirdpage", nposition+2);
-	 //model.addAttribute("nposition",nposition);
-	 switch(nposition){
-	 case 1: model.addAttribute("state1","active"); model.addAttribute("state2","inactive"); model.addAttribute("state3","inactive");
-	 case 2: model.addAttribute("state1", "inactive"); model.addAttribute("state2","active"); model.addAttribute("state3","inactive");
-	 case 3: model.addAttribute("state1", "inactive"); model.addAttribute("state2","inactive"); model.addAttribute("state3","active");
-	 default: model.addAttribute("state1","inactive"); model.addAttribute("state2","inactive"); model.addAttribute("state3","inactive");
+	 model.addAttribute("npages", npages);
+	 model.addAttribute("ncustomers",ncustomers);
+	 if(customers.size()!=0){
+	 List<Customer> listing = custservice.getCustomersbyLimit(currentemployee.getID(), CustomerController.NUMREGIST*(nposition-1), CustomerController.NUMREGIST);
+	 model.addAttribute("listing",listing);
 	 }
-
-	/* if(nposition==npages){
-		 model.addAttribute("firstpage", nposition-2);
-		 model.addAttribute("secondpage", nposition-1);
-		 model.addAttribute("thirdpage", nposition);
-	 }
-	 else if(nposition==npages-1){
-		 model.addAttribute("firstpage", nposition-1);
-		 model.addAttribute("secondpage", nposition);
-		 model.addAttribute("thirdpage", nposition+1);
-	 }
-	 else {
-		 model.addAttribute("firstpage", nposition);
-		 model.addAttribute("secondpage", nposition+1);
-		 model.addAttribute("thirdpage", nposition+2);
-	 }
-	 for (int i = nregistros*(nposition-1); i<nregistros*nposition;i++) {
-		 sendinglist.add(customers.get(i));
-	 }
-	 
-	 return sendinglist;
-	 /*
-	  * Pagination is in groups of three, we need to contemplate what happen when the user arrive at last of each three, 
-	  * then we'll go to next group
-	  * npages/3=nthreesome; --> nthreesome indicates in which group of three we are.
-	  * Look up where we are
-	  * if(ntrio!=1)
-	  * 	model.addAttribute("firtspag",nthreesome);
-	  * 	model.addAttribute("secondpag",nthreesome++);
-	  * 	model.addAttribute("thirdpag",nthreesome++);
-	  * 	nthreesome, nthreesome++, nthreesome++ --> we'll be the pages
-	  * else { --> Only in the first group, the start is in the position(nthreesome) of the group, 
-	  * 	   --> after we always start in position(nthreesome)+1
-	  * 	model.addAttribute("firtspag",nthreesome);
-	  * 	model.addAttribute("secondpag",nthreesome++);
-	  * 	model.addAttribute("thirdpag",nthreesome++);
-	  * 	nthreesome++, nthreesome++, nthreesome++ --> we'll be the pages
-	  * }
-	  * if(recibo n) {
-	  * 	Muestrame desde 14*(n-1) hasta 14*n
-	  * 	i=n;
-	  * 	case i = active;
-	  * 	resto = inactives;
-	  * }
-	  * if(recibo forward) {
-	  * 	Miro el valor de i, le hago ++
-	  * 	i=n;
-	  * 	Muestrame desde 14*(n-1) hasta 14*n
-	  * 	Case i = active;
-	  * }
-	  * if(recibo backward) {
-	  * 	Miro el valor de i, le hago --
-	  *	 	i=n;
-	  * 	Muestrame desde 14*(n-1) hasta 14*n
-	  * 	Case i = active;
-	  * }
-	  
- }*/
- 
- //PREDETERMINATE DB VALUES
- public void setDBValues() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-	 List<CorporationAdress> CorpAdList = corpservice.getCorporationAdressbyCorporation("Indra Software Labs S.L.");
-		if(CorpAdList.size()==1){
-		}
-		else{
-			//First Employee
-	 Employee employee = new Employee();
-	 employee.setCorporation("Indra Software Labs S.L.");
-	 employee.setUser("antonio@indra.es");
-	 employee.setName("Antonio");
-	 employee.setSurname("De Roman Martinez");
-	 employee.setPassword(ReturnedHash("antonio"));
-	 employee.setPassword2(ReturnedHash("antonio"));
-	 employee.setPhone("685 789 458");
-	 employee.setRole("Developer");
-	 empservice.createEmployee(employee);
-	 
-		    //Second Employee
-	 Employee employee2 = new Employee();
-	 employee2.setCorporation("Repsol S.A.");
-	 employee2.setUser("alvaro@repsol.es");
-	 employee2.setName("Alvaro");
-	 employee2.setSurname("Garcia Errejon");
-	 employee2.setPassword(ReturnedHash("alvaro"));
-	 employee2.setPassword2(ReturnedHash("alvaro"));
-	 employee2.setPhone("654 079 564");
-	 employee2.setRole("Developer Pro");
-	 empservice.createEmployee(employee2);
-	 
-	 	   //Third Employee
-	 Employee employee3 = new Employee();
-	 employee3.setCorporation("Deloitte S.L.");
-	 employee3.setUser("vicente@deloitte.es");
-	 employee3.setName("Vicente");
-	 employee3.setSurname("Cervera Sanchez");
-	 employee3.setPassword(ReturnedHash("vicente"));
-	 employee3.setPassword2(ReturnedHash("vicente"));
-	 employee3.setPhone("678 459 248");
-	 employee3.setRole("Executive");
-	 empservice.createEmployee(employee3);
-			
-			//Indra Lleida
-	 CorporationAdress corpad = new CorporationAdress();
-	 corpad.setCorporation("Indra Software Labs S.L.");
-	 corpad.setOffice("Lleida-Parque Gardeny");
-	 corpad.setDepartment("Software Labs");
-	 corpad.setAdress("Parque de Gardeny, Edifio 28");
-	 corpad.setCity("Lleida");
-	 corpad.setPostalcode("25071");
-	 corpad.setCountry("Spain");
-	 corpservice.createCorporationAdress(corpad);
-	 		//Repsol Madrid
-	 CorporationAdress corpad2 = new CorporationAdress();
-	 corpad2.setCorporation("Repsol S.A.");
-	 corpad2.setOffice("Campus Repsol");
-	 corpad2.setDepartment("Informatica Aplicada");
-	 corpad2.setAdress("Calle de Mendez Alvaro, 44");
-	 corpad2.setCity("Madrid");
-	 corpad2.setPostalcode("28045");
-	 corpad2.setCountry("Spain");
-	 corpservice.createCorporationAdress(corpad2);
-	 
-	 		//Deloitte Barcelona
-	 CorporationAdress corpad3 = new CorporationAdress();
-	 corpad3.setCorporation("Deloitte S.L.");
-	 corpad3.setOffice("Barcelona-Parque Empresarial");
-	 corpad3.setDepartment("Consulting Labs");
-	 corpad3.setAdress("Parque Empresarial Metrovacesa 22, Edificio D, 3ª planta");
-	 corpad3.setCity("Barcelona");
-	 corpad3.setPostalcode("08034");
-	 corpad3.setCountry("Spain");
-	 corpservice.createCorporationAdress(corpad3);
-		}
  }
  
- public void defaultCreation(Customer customer){
-	 custservice.createCustomer(customer);
-	 custservice.createCustomer(customer);
-	 custservice.createCustomer(customer);
-	 custservice.createCustomer(customer);
-	 custservice.createCustomer(customer);
-	 custservice.createCustomer(customer);
-	 custservice.createCustomer(customer);
-	 custservice.createCustomer(customer);
-	 custservice.createCustomer(customer);
-	 custservice.createCustomer(customer);
+ 
+ @InitBinder
+ public void binder(WebDataBinder binder) {
+	 binder.registerCustomEditor(Date.class, new PropertyEditorSupport() {
+		    public void setAsText(String value) {
+		            try {
+						setValue(new SimpleDateFormat("yyyy-MM-dd").parse(value));
+					} catch (ParseException e) {
+						e.printStackTrace();
+						setValue(null);
+					}
+		    
+		    }
+
+		    public String getAsText() {
+		    	if (null!=getValue())
+		    		return new SimpleDateFormat("dd/MM/yyyy").format((Date) getValue());
+		    	else
+		    		return "";
+		    }        
+
+		});
  }
 }

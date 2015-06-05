@@ -32,6 +32,18 @@ public class CustomerService {
 	 return repository.getCustomersbyLimit(IDemployee, first, last);
 	 }
  
+ public List<Customer> getCustomersbyNameAge(int IDemployee, String byname, int byage) {
+	 return repository.getCustomersbyNameAge(IDemployee, byname, byage);
+	 }
+ 
+ public List<Customer> getCustomersbyName(int IDemployee, String byname) {
+	 return repository.getCustomersbyName(IDemployee, byname);
+	 }
+ 
+ public List<Customer> getCustomersbyAge(int IDemployee, int byage) {
+	 return repository.getCustomersbyAge(IDemployee, byage);
+	 }
+ 
  public void createCustomer(Customer customer) {
  repository.createCustomer(customer);
  }

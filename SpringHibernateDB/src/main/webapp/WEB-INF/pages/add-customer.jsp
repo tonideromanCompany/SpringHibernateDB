@@ -49,7 +49,7 @@
 <div class="col-xs-8 col-xs-offset-2">   
 <div class="form-group">        
 <label class="control-label">Customer Birthday:</label>                 
-<form:input class="form-control" path="birthday" placeholder="MM/dd/yyyy" /> 
+<form:input class="form-control" type="date" path="birthday" placeholder="MM/dd/yyyy" /> 
 <form:errors path="birthday" element="span" cssClass="error"/>
 </div>    
 </div> 

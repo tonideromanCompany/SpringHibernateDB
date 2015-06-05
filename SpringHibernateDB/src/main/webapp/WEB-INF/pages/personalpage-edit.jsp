@@ -16,6 +16,7 @@
 		<h3 class="panel-tittle">
 			<span class="glyphicon glyphicon-user"></span>
 			<strong>Personal Info</strong>
+			<a href="<c:url value="personalpage-editinfo"/>"  class="panel-right btn bnt-default glyphicon glyphicon-pencil"></a>
 		</h3> 
 	</div>
 		<table class="table table-bordered">
@@ -78,7 +79,9 @@
 				<td><form:input type="text" class="form-control" path="country" placeholder="${employeeadress.country}" /> 
 					<form:errors path="country" element="span" cssClass="error"/></td>
 			</tr>
+			
 		</table>
+		<form:input type="hidden" path = "id" value="${employeeadress.id}"/>
 		<input type="submit" class="btn btn-primary" value="Save Changes" />
 		</form:form>
 </div>

@@ -61,6 +61,7 @@
 		<h3 class="panel-tittle">
 			<span class="glyphicon glyphicon-home"></span>
 			<strong>Personal Adress</strong>
+			<a href="<c:url value="personalpage-edit"/>"  class="panel-right btn bnt-default glyphicon glyphicon-pencil"></a>
 		</h3> 
 	</div>
 		<table class="table table-bordered">
