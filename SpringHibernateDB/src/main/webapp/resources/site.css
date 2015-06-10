@@ -83,6 +83,24 @@ html, body {
 	color: black;
 }
 
+.trashbut {
+	border: 1px #000000 solid;
+	box-shadow: 0 0 5px #444444;
+	margin-left: 10px;
+}
+
+.modifybut {
+	border: 1px #000000 solid;
+	box-shadow: 0 0 5px #444444;
+	margin-left: 10px;
+}
+
+.addbut {
+	border: 1px #000000 solid;
+	box-shadow: 0 0 5px #444444;
+	margin-left: 10px;
+}
+
 .panel-right{
   color: gray;
   margin-top: -0.2em;
@@ -92,10 +110,23 @@ html, body {
 
 .page-right{
 	 float: right;
-	 margin-top: -0.2em;	
+	 margin-top: -0.2em;
+	 margin-right: 10px;	
 }
 .pagination {
-	margin-left: 10px;
+	margin-top: 0px !important;
+	margin-right: 30px;
+	margin-bottom: 0px !important;
+	box-shadow: 0 0 5px #444444;
+}
+
+
+.show{
+	
+}
+
+.rows{
+	margin-top: 10px;
 }
 
 .navbar {
@@ -106,12 +137,13 @@ html, body {
 
 .formlarge{
 	width: 20%;
+	margin-right: 10px;
+	margin-bottom: 10px;
 }
 
-.formgroupC{
-	float:center;
+.form-size{
+	width: 10%;
+	margin-right: 10px;
+	margin-bottom: 10px;
 }
 
-.formgroupR{
-	float:right;
-}

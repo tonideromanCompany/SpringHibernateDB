@@ -1,12 +1,12 @@
 package com.indra.app.customer;
 
 import org.hibernate.SessionFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
  
-
-
+import java.sql.Timestamp;
 import java.util.List;
  
 /**
@@ -38,11 +38,20 @@ public class CustomerRepository {
  }
  
  @SuppressWarnings("unchecked")
- public List<Customer> getCustomersbyNameAge(int IDemployee, String byname, int byage) {
+ public List<Customer> getCustomersbyIDcustomer(int IDcustomer) {
  return sessionFactory.getCurrentSession()
-  .createQuery("FROM Customer c WHERE idemployee=:ID AND age=:A AND name LIKE :N")
+  .createQuery("FROM Customer c WHERE id=:ID")
+  .setInteger("ID", IDcustomer)
+  .list();
+ }
+ 
+ @SuppressWarnings("unchecked")
+ public List<Customer> getCustomersbyNameAge(int IDemployee, String byname, int byagehigh, int byagelow) {
+ return sessionFactory.getCurrentSession()
+  .createQuery("FROM Customer c WHERE idemployee=:ID AND age BETWEEN :L AND :H AND name LIKE :N")
   .setInteger("ID", IDemployee)
-  .setInteger("A", byage)
+  .setInteger("H", byagehigh)
+  .setInteger("L", byagelow)
   .setString("N", "%"+byname+"%")
   .list();
  }
@@ -57,11 +66,61 @@ public class CustomerRepository {
  }
  
  @SuppressWarnings("unchecked")
- public List<Customer> getCustomersbyAge(int IDemployee, int byage) {
+ public List<Customer> getCustomersbyAge(int IDemployee, int byagehigh, int byagelow) {
+// System.out.printf("ID: %s High: %s Low: %s",IDemployee, byagehigh, byagelow);
  return sessionFactory.getCurrentSession()
-  .createQuery("FROM Customer c WHERE idemployee=:ID AND age=:A")
+  .createQuery("FROM Customer c WHERE idemployee=:id AND age BETWEEN :L AND :H")
+  .setParameter("id", IDemployee)
+  .setParameter("L", byagelow)
+  .setParameter("H", byagehigh)
+  .list();
+ }
+ 
+ @SuppressWarnings("unchecked")
+ public List<Customer> getCustomersbyDate(int IDemployee, Timestamp bydatehigh, Timestamp bydatelow) {
+// System.out.printf("ID: %s High: %s Low: %s",IDemployee, byagehigh, byagelow);
+ return sessionFactory.getCurrentSession()
+  .createQuery("FROM Customer c WHERE idemployee=:id AND currentdate BETWEEN :L AND :H")
+  .setParameter("id", IDemployee)
+  .setParameter("L", bydatelow)
+  .setParameter("H", bydatehigh)
+  .list();
+ }
+ 
+ @SuppressWarnings("unchecked")
+ public List<Customer> getCustomersbyNameAgeLimit(int IDemployee, String byname, int byagehigh, int byagelow, int first, int last) {
+ return sessionFactory.getCurrentSession()
+  .createQuery("FROM Customer c WHERE idemployee=:ID AND age BETWEEN :L AND :H AND name LIKE :N")
   .setInteger("ID", IDemployee)
-  .setInteger("A", byage)
+  .setInteger("H", byagehigh)
+  .setInteger("L", byagelow)
+  .setString("N", "%"+byname+"%")
+  .setFirstResult(first)
+  .setMaxResults(last)
+  .list();
+ }
+ 
+ @SuppressWarnings("unchecked")
+ public List<Customer> getCustomersbyNameLimit(int IDemployee, String byname, int first, int last) {
+ return sessionFactory.getCurrentSession()
+  .createQuery("FROM Customer c WHERE idemployee=:ID AND name LIKE :N")
+  .setInteger("ID", IDemployee)
+  .setString("N", "%"+byname+"%")
+  .setFirstResult(first)
+  .setMaxResults(last)
+  .list();
+ }
+ 
+ @SuppressWarnings("unchecked")
+ public List<Customer> getCustomersbyAgeLimit(int IDemployee, int byagehigh, int byagelow, int first, int last) {
+// System.out.printf("ID: %s High: %s Low: %s",IDemployee, byagehigh, byagelow);
+ return sessionFactory.getCurrentSession()
+  .createQuery("FROM Customer c WHERE idemployee=:id AND age BETWEEN :L AND :H")
+  .setParameter("id", IDemployee)
+  .setParameter("L", byagelow)
+  .setParameter("H", byagehigh)
+  .setFirstResult(first)
+  .setMaxResults(last)
   .list();
  }
  
@@ -73,6 +132,23 @@ public class CustomerRepository {
 		.setFirstResult(first)
 		.setMaxResults(last)
 		.list();
+ }
+ 
+ @SuppressWarnings("unchecked")
+ public List<Customer> getCustomersbyDateLimit(int IDemployee, Timestamp bydatehigh, Timestamp bydatelow, int first, int last) {
+// System.out.printf("ID: %s High: %s Low: %s",IDemployee, byagehigh, byagelow);
+ return sessionFactory.getCurrentSession()
+  .createQuery("FROM Customer c WHERE idemployee=:id AND currentdate BETWEEN :L AND :H")
+  .setParameter("id", IDemployee)
+  .setParameter("L", bydatelow)
+  .setParameter("H", bydatehigh)
+  .setFirstResult(first)
+  .setMaxResults(last)
+  .list();
+ }
+ 
+ public void deleteCustomer(Customer customer) {
+	 sessionFactory.getCurrentSession().delete(customer);
  }
  
  public void createCustomer(Customer customer) {

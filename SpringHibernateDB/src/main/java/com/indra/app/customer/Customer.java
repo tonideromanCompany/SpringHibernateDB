@@ -1,5 +1,6 @@
 package com.indra.app.customer;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 //import org.springframework.format.annotation.DateTimeFormat;
+
 
 import com.indra.app.validator.Phone;
 
@@ -57,6 +59,8 @@ public class Customer {
  @NotEmpty
  @Phone
  private String phone;
+ 
+ private Timestamp currentdate;
  
  public enum Gender {
 	 MALE, FEMALE
@@ -125,4 +129,13 @@ public class Customer {
  public void setPhone(String phone){
 	 this.phone = phone;
  }
+ 
+ public Timestamp getCurrentdate() {
+	 return currentdate;
+ }
+ 
+ public void setCurrentdate(Timestamp currentdate) {
+	 this.currentdate = currentdate;
+ }
+ 
 }

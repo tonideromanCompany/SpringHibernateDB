@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <nav>
-  <ul class="pagination pagination-md">
+  <ul class="pagination pagination-default">
     <li>
       <a href="?page=1" aria-label="Fisrt">
         <span aria-hidden="true">&laquo;</span>

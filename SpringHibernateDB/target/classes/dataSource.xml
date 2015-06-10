@@ -25,10 +25,9 @@
  </property>
  <property name="hibernateProperties">
   <props>   
-    <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+    <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
     <prop key="hibernate.show_sql">true</prop>   
-    <prop key="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</prop>   
-    <prop key="hibernate.hbm2ddl.auto">create</prop>     
+    <prop key="hibernate.connection.driver_class">org.mysql.jdbc.Driver</prop>      
   </props>
   <!-- Validate: validate the schema, makes no change in the database
   	   Update: update the schema

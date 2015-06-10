@@ -12,6 +12,9 @@
 <!-- Optional theme -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
 
+<!-- Jquery -->
+<script src="<c:url value="/resources/jquery-1.11.3.min.js"/>"></script>
+
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <link rel="stylesheet" media="all" href="<c:url value="/resources/site.css"/>">
@@ -36,7 +39,7 @@
         <li class="${stateH}"><a href="<c:url value="personalpage"/>">Home <span class="sr-only">(current)</span></a></li>
         <li class="${stateAC}"><a href="<c:url value="add-customer"/>">Add Customer</a></li>
         <li class="${stateC}"><a href="<c:url value="customers?page=1"/>">My Customers</a></li>
-        <li class="${stateS}"><a href="<c:url value="search"/>">Search</a></li>
+        <li class="${stateS}"><a href="<c:url value="search?page=1"/>">Search</a></li>
         <li class="disabled">Add Employee</li>
         <li><a href="<c:url value="employees"/>">Shut Down</a></li>
       </ul>
