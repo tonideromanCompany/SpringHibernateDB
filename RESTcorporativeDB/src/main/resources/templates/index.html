@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+ 
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css" />
+
+<!-- Jquery -->
+<script src="/jquery-1.11.3.min.js"></script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<!-- CSS implementation -->
+<link rel="stylesheet" href="/site.css" />
+
+<!-- Hover lib -->
+<link rel="stylesheet" href="/hover-min.css" />
+<script type="text/javascript">
+//<![CDATA[
+function enviarGetCustomer() { 
+	var lista = new Array(15);
+	var page = $("input#GETcustpage").val();
+	var nregisters = $("input#GETcustregisters").val()
+	if(page==null)
+		page=1;
+	if(nregisters==null)
+		nregisters=15;
+	$.ajax({
+		  url: '/customer?page='+page+'&nregisters='+nregisters,
+		  type: 'GET',
+		  success: function(result) {
+			  var i = 0;
+			  $("#div1").empty();
+			  $("#div1").append("<br>");
+			  $("#div1").append("<strong class='Clime'>200 OK</strong>");
+			  $("#div1").append("<br>");
+			  $("#div1").append("<strong class='Cblue'>Listing '"+result.results.length+"' Customers (results):</strong><br>");
+			  while (i<result.results.length)
+			  {
+			  var birthday = new Date(result.results[i].birthday);
+			  var currentdate = new Date(result.results[i].currentdate);
+			  $("#div1").append("<strong>Id: </strong>"+result.results[i].id);
+			  $("#div1").append("<strong> IdEmployee: </strong>"+result.results[i].idemployee);
+			  $("#div1").append("<strong> Name: </strong>"+result.results[i].name);
+			  $("#div1").append("<strong> Email: </strong>"+result.results[i].email);
+			  $("#div1").append("<strong> Age: </strong>"+result.results[i].age);
+			  $("#div1").append("<strong> Gender: </strong>"+result.results[i].gender);
+			  $("#div1").append("<strong> Birthday: </strong>"+ConvertBirthday(birthday));
+			  $("#div1").append("<strong> Phone: </strong>"+result.results[i].phone);
+			  $("#div1").append("<strong> Entry Date: </strong>"+ConvertCurrentDate(currentdate)+"<br>");
+			  //console.log(result.results[i]);
+			  i++;
+			  }
+			  $("#div1").append("<br>");
+			  $("#div1").append("<strong class='Cblue'>Total of customers(nresults): "+result.nresults+"</strong>");
+		  }
+		});
+	}
+
+function enviarGetCustomerId() { 
+	var id = $("input#GETcustIdid").val();
+	if(id<=0){
+	$("#GETidicon").attr("class", "glyphicon glyphicon-remove form-control-feedback");
+	$("#formGetId").attr("class", "form-group has-error has-feedback");
+	$("#GETcustIdid").attr("placeholder", "The ID is a required field!");
+	}
+	else {
+	$.ajax({
+		  url: '/customer/'+id,
+		  type: 'GET',
+		  success: function(result) {
+			  var birthday = new Date(result.birthday);
+			  var currentdate = new Date(result.currentdate);			
+			  $("#div3").empty();
+			  $("#div3").append("<br>");
+			  $("#div3").append("<strong class='Clime'>200 OK</strong>");
+			  $("#div3").append("<br>");
+			  $("#div3").append("<strong class='Cblue'>Id: </strong>"+result.id);
+			  $("#div3").append("<strong> IdEmployee: </strong>"+result.idemployee);
+			  $("#div3").append("<strong> Name: </strong>"+result.name);
+			  $("#div3").append("<strong> Email: </strong>"+result.email);
+			  $("#div3").append("<strong> Age: </strong>"+result.age);
+			  $("#div3").append("<strong> Gender: </strong>"+result.gender);
+			  $("#div3").append("<strong> Birthday: </strong>"+ConvertBirthday(birthday));
+			  $("#div3").append("<strong> Phone: </strong>"+result.phone);
+			  $("#div3").append("<strong> Entry Date: </strong>"+ConvertCurrentDate(currentdate)+"<br>");
+		  },
+	 error: function(fail){
+		  $("#div3").empty();
+		  $("#div3").append("<br>");
+		  $("#div3").append("<strong class='Cred'>404 NOT FOUND</strong>");
+		  $("#div3").append("<br>");
+	  }
+		});
+	$("#GETidicon").attr("class", "glyphicon glyphicon-ok form-control-feedback");
+	$("#formGetId").attr("class", "form-group has-success has-feedback");
+	$("#GETcustIdid").attr("placeholder", "It doesn't default value");
+	}
+	}
+	
+function enviarGetCustomerIdEmployee() { 
+	var id = $("input#GETcustIdidemp").val();
+	if(id<=0){
+		$("#GETidempicon").attr("class", "glyphicon glyphicon-remove form-control-feedback");
+		$("#formGetIdEmployee").attr("class", "form-group has-error has-feedback");
+		$("#GETcustIdidemp").attr("placeholder", "The ID is a required field!");
+		}
+	else {
+	$.ajax({
+		  url: '/customer/'+id+'/employee',
+		  type: 'GET',
+		  success: function(result) {
+			  $("#div6").empty();
+			  $("#div6").append("<br>");
+			  $("#div6").append("<strong class='Clime'>200 OK</strong>");
+			  $("#div6").append("<br>");
+			  var i = 0;
+			  while (i<result.length)
+			  {
+			  $("#div6").append("<strong class='Cblue'>Id: </strong>"+result[i].id);
+			  $("#div6").append("<strong> Corporation: </strong>"+result[i].corporation);
+			  $("#div6").append("<strong> User: </strong>"+result[i].user);
+			  $("#div6").append("<strong> Name: </strong>"+result[i].name);
+			  $("#div6").append("<strong> Surname: </strong>"+result[i].surname);
+			  $("#div6").append("<strong> Password: </strong>"+result[i].password);
+			  $("#div6").append("<strong> Password2: </strong>"+result[i].password2);
+			  $("#div6").append("<strong> Phone: </strong>"+result[i].phone);
+			  $("#div6").append("<strong> Role: </strong>"+result[i].role+"<br>");
+			  i++;
+			  }
+		  },
+		  error: function(fail){
+			  $("#div6").empty();
+			  $("#div6").append("<br>");
+			  $("#div6").append("<strong class='Cred'>404 NOT FOUND</strong>");
+			  $("#div6").append("<br>");
+		  }
+		});
+	$("#GETidempicon").attr("class", "glyphicon glyphicon-ok form-control-feedback");
+	$("#formGetIdEmployee").attr("class", "form-group has-success has-feedback");
+	$("#GETcustIdidemp").attr("placeholder", "It doesn't default value");
+	}
+	}
+
+function enviarDeleteCustomerId() { 
+	var id = $("input#DELETEcustIdid").val();
+	$.ajax({
+		  url: '/customer/'+id,
+		  type: 'DELETE',
+		  success: function(result) {
+			  $("#div5").empty();
+			  $("#div5").append("<br>");
+			  $("#div5").append("<strong class='Clime'>200 OK</strong>");
+			  $("#div5").append("<br>");
+			  $("#div5").append("The content has been deleted");
+		  },
+		  error: function(fail){
+			  $("#div5").empty();
+			  $("#div5").append("<br>");
+			  $("#div5").append("<strong class='Cred'>404 NOT FOUND</strong>");
+			  $("#div5").append("<br>");
+		  }
+	});
+	$("#myModal").modal('hide');
+}
+
+function enviarPOSTCustomer() {
+	var name  = $("input#POSTcustname").val();
+	var email = $("input#POSTcustemail").val();
+	var age = $("input#POSTcustage").val();
+	var gender = $("select#POSTcustgender").val();
+	var birthday= $("input#POSTcustbirthday").val();
+	var phone = $("input#POSTcustphone").val();
+	var date = new Date(birthday);
+	$.ajax({
+		  url: '/customer',
+		  type: 'POST',
+		  data: {'name':name, 'email':email, 'age':age, 'gender':gender, 'birthday':date, 'phone':phone}
+	});
+	$.ajax({
+		url: '/customer',
+		  type: 'GET',
+		  succes: function(result) {
+			  $("#div2").empty();
+			  $("#div2").append("<br>");
+			  $("#div2").append("<strong class='Clime'>201 CREATED</strong>");
+			  $("#div2").append("<br>");
+			  $("#div2").append("The customer has been created");
+		  },
+		  error: function(fail){
+			  $("#div2").empty();
+			  $("#div2").append("<br>");
+			  $("#div2").append("<strong class='Cgray'>Unexpected error: Can't create your customer, please review the console log</strong>");
+			  $("#div2").append("<br>");
+		  }
+	});
+		  }
+		  
+function enviarUPDATECustomerId() {
+	var id = $("input#UPDATEcustid").val();
+	var name  = $("input#UPDATEcustname").val();
+	var email = $("input#UPDATEcustemail").val();
+	var age = $("input#UPDATEcustage").val();
+	var gender = $("select#UPDATEcustgender").val();
+	var birthday= $("input#UPDATEcustbirthday").val();
+	var phone = $("input#UPDATEcustphone").val();
+	var date = new Date(birthday);
+	$.ajax({
+		  url: '/customer/'+id,
+		  type: 'POST',
+		  data: {'name':name, 'email':email, 'age':age, 'gender':gender, 'birthday':date, 'phone':phone},
+		  succes: function(result) {
+			  $("#div4").empty();
+			  $("#div4").append("<br>");
+			  $("#div4").append("<strong class='Clime'>201 CREATED</strong>");
+			  $("#div4").append("<br>");
+			  $("#div4").append("The customer has been created");
+		  },
+		  error: function(fail){
+			  console.log(fail);
+			  $("#div4").empty();
+			  $("#div4").append("<br>");
+			  $("#div4").append("<strong class='Cgray'>Unexpected error: Can't create your customer, please review the console log</strong>");
+			  $("#div4").append("<br>");
+			  $("#div4").append("Error: You MUST to enter all the form fields");
+			  $("#div4").append("<br>");
+		  }
+	});
+	$("#myModalUPDATE").modal('hide');
+		  }
+
+$(function () 
+	      { $("[data-toggle='popover']").popover();
+	      });
+
+function DelDiv(i){
+	$("#div"+i).empty();
+}
+
+function ConvertBirthday(birthday){
+	  return birthday.getFullYear()+"/"+birthday.getMonth()+"/"+birthday.getDate();
+}
+function ConvertCurrentDate(currentdate){
+	var options = {
+		    weekday: "long", year: "numeric", month: "short",
+		    day: "numeric", hour: "2-digit", minute: "2-digit"
+		};
+	return currentdate.toLocaleTimeString("en-us", options);
+}
+
+$(document).ready(function(){
+    $("#DELbut").click(function(){
+    	var id = $("input#DELETEcustIdid").val();
+    	if(id<=0) {
+    		$("#DELicon").attr("class", "glyphicon glyphicon-remove form-control-feedback");
+    		$("#formdelete").attr("class", "form-group has-error has-feedback");
+    		$("#DELETEcustIdid").attr("placeholder", "The ID is a required field!");
+    	}
+    	else {
+    		$("#DELicon").attr("class", "glyphicon glyphicon-ok form-control-feedback");
+    		$("#formdelete").attr("class", "form-group has-success has-feedback");
+    		$("#myModal").modal('show');
+    		$("#DELETEcustIdid").attr("placeholder", "It doesn't default value");
+    	}
+    });
+});
+$(document).ready(function(){
+    $("#UPDbut").click(function(){
+        $("#myModalUPDATE").modal('show');
+    });
+});
+
+//]]>
+</script>
+</head>
+<body>
+<nav class="navbar navbar-default" id="degrade">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-justify">
+      	<li class="Cwhiteicon glyphicon glyphicon-hdd"></li>
+        <li class="CwhiteL">CorporativeDB 1.0 REST DOCUMENTATION</li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+    	<li><button type="button" class="infb CwhiteL glyphicon glyphicon-info-sign info_help" title="Info"  
+      data-container="body" data-toggle="popover" data-trigger="focus" data-placement="bottom" 
+      data-content="This page lists all the REST methods of the application. 
+      In the right menu, you have all the methods, and clicking on each one the page will go to the content automatically.
+    	 In each of the methods you have a description of all relevant information about the request and the response, and even, the opportunity to try them.">info</button></li>
+    </ul>
+    </div>
+    </div>
+</nav>
+<div class="col-md-9">
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-primary">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#GETcustomer" aria-expanded="true" aria-controls="GETcustomer">
+          GET/customer
+        </a>
+      </h4>
+    </div>
+    <div id="GETcustomer" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+      <div class="panel-body">
+        <p><h4 class="Cblue">Summary</h4></p>
+        <p><h6>Customer entity</h6></p>
+        <p><h4 class="Cblue">Description</h4></p>
+        <p><h5>This method returns the list of all customers in the database listed in order of entry.</h5></p>
+      	<p><h4 class="Cblue">Parameters</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Name</th>
+      		<th>Located in</th>
+      		<th>Description</th>
+      		<th>Required</th>
+      		<th>Schema</th>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">page</td>
+      			<td>query</td>
+      			<td>Page number of the customers list</td>
+      			<td>No</td>
+      			<td class="Cgreen">number (int)</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">size</td>
+      			<td>query</td>
+      			<td>Number of customers per page</td>
+      			<td>No</td>
+      			<td class="Cgreen">number (int)</td>
+      		</tr>
+      	</table>
+      	<p><h4 class="Cblue">Responses</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Code</th>
+      		<th>Description</th>
+      		</tr>
+      		<tr>
+      			<td class="Clime">200 OK</td>
+      			<td><p><strong>results:</strong> An array of customers.</p>
+      			<p><strong>nresults:</strong> Total of customers.</p></td>
+      		</tr>
+      		<tr>
+      			<td class="Cgray">default</td>
+      			<td>Unexpected error</td>
+      		</tr>
+      	</table>
+      	<button class="hvr-float-shadow btn btn-default" id="tryButton" type="button" data-toggle="collapse" data-target="#GETcustomerREQ" aria-expanded="false" aria-controls="GETcustomerREQ" onclick="DelDiv(1)">
+  		Try this operation
+		</button>
+<div class="collapse" id="GETcustomerREQ">
+  <div class="well">
+    <p><h4 class="Cgray">Request</h4></p>
+    <div class="form-group">
+    	<label class="control-label">Page</label>
+    	<input type="number" id="GETcustpage" name="GETcustpage" class="form-control" placeholder="Default value = 1" />
+    	<p><small>Page number of the customers list</small></p>
+    	<label class="control-label">Number of registers</label>
+    	<input type="number" id="GETcustregisters" name="GETcustregisters" class="form-control" placeholder="Default value = 15" />
+    	<small>Number of customers per page</small>
+    </div>
+    <button class="hvr-buzz-out btn bnt-default" type="button" onclick="enviarGetCustomer()">
+  		Send request
+		</button>
+		<p><h4 class="Cgray">Response</h4></p>
+  		<div id="div1">
+  		</div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-primary">
+    <div class="panel-heading" role="tab" id="headingTwo">
+      <h4 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" href="#POSTcustomer" aria-expanded="true" aria-controls="collapseTwo">
+          POST/customer
+        </a>
+      </h4>
+    </div>
+    <div id="POSTcustomer" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+      <div class="panel-body">
+        <p><h4 class="Cblue">Summary</h4></p>
+        <p><h6>Customer entity</h6></p>
+        <p><h4 class="Cblue">Description</h4></p>
+        <p><h5>This method creates a new customer taking his values from a form</h5></p>
+      	<p><h4 class="Cblue">Parameters</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Name</th>
+      		<th>Located in</th>
+      		<th>Description</th>
+      		<th>Required</th>
+      		<th>Schema</th>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">name</td>
+      			<td>query</td>
+      			<td>Name field of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">string</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">email</td>
+      			<td>query</td>
+      			<td>Email field of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">string</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">age</td>
+      			<td>query</td>
+      			<td>Age field of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">number (int)</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">gender</td>
+      			<td>query</td>
+      			<td>Gender type of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">enum (selector)</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">birthday</td>
+      			<td>query</td>
+      			<td>Birthday field of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">date (timestamp)</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">phone</td>
+      			<td>query</td>
+      			<td>Phone field of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">string (@phone)</td>
+      		</tr>
+      	</table>
+      	<p><h4 class="Cblue">Responses</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Code</th>
+      		<th>Description</th>
+      		</tr>
+      		<tr>
+      			<td class="Clime">201 CREATED</td>
+      			<td>Object created satisfactory</td>
+      		</tr>
+      		<tr>
+      			<td class="Cgray">default</td>
+      			<td>Unexpected error</td>
+      		</tr>
+      	</table>
+      	<button class="hvr-float-shadow btn btn-default" id="tryButton" type="button" data-toggle="collapse" data-target="#POSTcustomerREQ" aria-expanded="false" aria-controls="POSTcustomer" onclick="DelDiv(2)">
+  		Try this operation
+		</button>
+		<div class="collapse" id="POSTcustomerREQ">
+  <div class="well">
+    <p><h4 class="Cgray">Request</h4></p>
+    <div class="form-group" name="POSTform" id="POSTform">
+    	<label class="control-label">Name</label>
+    	<input type="text" id="POSTcustname" name="POSTcustname" class="form-control" placeholder="Enter customer's name" />
+    	<p><small>Name field of customer's object</small></p>
+    	<label class="control-label">Email</label>
+    	<input type="text" id="POSTcustemail" name="POSTcustemail" class="form-control" placeholder="Enter customer's email" />
+    	<p><small>Email field of customer's object</small></p>
+    	<label class="control-label">Age</label>
+    	<input type="number" id="POSTcustage" name="POSTcustage" class="form-control" placeholder="Enter customer's age" />
+    	<p><small>Age field of customer's object</small></p>
+    	<label class="control-label">Gender</label>
+    	<select id="POSTcustgender" name="POSTcustgender" class="form-control">
+    		<option value="" label="Select Gender" />
+    		<option value="MALE" label="Male" />
+    		<option value="FEMALE" label="Female" />
+    	</select>
+    	<p><small>Gender type of customer's object</small></p>
+    	<label class="control-label">Birthday</label>
+    	<input type="date" id="POSTcustbirthday" name="POSTcustbirthday" class="form-control" />
+    	<p><small>Birthday field of customer's object</small></p>
+    	<label class="control-label">Phone</label>
+    	<input type="text" id="POSTcustphone" name="POSTcustphone" class="form-control" placeholder="Enter customer's phone" />
+    	<p><small>Phone field of customer's object</small></p>
+    </div>
+    <button class="hvr-buzz-out btn bnt-default" type="button" onclick="enviarPOSTCustomer()">
+  		Send request
+		</button>
+		<p><h4 class="Cgray">Response</h4></p>
+  		<div id="div2">
+  		</div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-primary">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h4 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" href="#GETcustomerId" aria-expanded="true" aria-controls="collapseThree">
+          GET/customer/id/
+        </a>
+      </h4>
+    </div>
+    <div id="GETcustomerId" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+      <div class="panel-body">
+         <p><h4 class="Cblue">Summary</h4></p>
+        <p><h6>Customer entity</h6></p>
+        <p><h4 class="Cblue">Description</h4></p>
+        <p><h5>This method returns a customer from an id.</h5></p>
+      	<p><h4 class="Cblue">Parameters</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Name</th>
+      		<th>Located in</th>
+      		<th>Description</th>
+      		<th>Required</th>
+      		<th>Schema</th>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">id</td>
+      			<td>query</td>
+      			<td>Customer identifier</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">number (int)</td>
+      		</tr>
+      	</table>
+      	<p><h4 class="Cblue">Responses</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Code</th>
+      		<th>Description</th>
+      		</tr>
+      		<tr>
+      			<td class="Clime">200 OK</td>
+      			<td>A customer</td>
+      		</tr>
+      		<tr>
+      			<td class="Cred">404 NOT FOUND</td>
+      			<td><p>The identifier is incorrect:</p>
+      				<p>-Id = null</p>
+      				<p>-The id doesn't belong to any customer</p></td>
+      		</tr>
+      		<tr>
+      			<td class="Cgray">default</td>
+      			<td>Unexpected error</td>
+      		</tr>
+      	</table>
+      	<button class="hvr-float-shadow btn btn-default" id="tryButton" name="tryButton" type="button" data-toggle="collapse" data-target="#GETcustomerREQ2" aria-expanded="false" aria-controls="GETcustomerREQ2" onclick="DelDiv(3)">
+  		Try this operation
+		</button>
+<div class="collapse" id="GETcustomerREQ2">
+  <div class="well">
+    <p><h4 class="Cgray">Request</h4></p>
+    <div class="form-group" id="formGetId" name="formGetId">
+    	<label class="control-label">Id</label>
+    	<input type="number" id="GETcustIdid" name="GETcustIdid" class="form-control" placeholder="It doesn't default value" />
+    	<span class="" id="GETidicon" name="GETidicon" aria-hidden="true"></span>
+  		<span id="inputError2Status" class="sr-only">(error)</span>
+    	<p><small>Customer identifier</small></p>
+    </div>
+    <button class="hvr-buzz-out btn bnt-default" type="button" onclick="enviarGetCustomerId()">
+  		Send request
+		</button>
+		<p><h4 class="Cgray">Response</h4></p>
+  		<div id="div3">
+  		</div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-primary">
+    <div class="panel-heading" role="tab" id="headingFour">
+      <h4 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" href="#UPDATEcustomerId" aria-expanded="true" aria-controls="collapseFour">
+          UPDATE/customer/id/
+        </a>
+      </h4>
+    </div>
+    <div id="UPDATEcustomerId" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+      <div class="panel-body">
+         <p><h4 class="Cblue">Summary</h4></p>
+        <p><h6>Customer entity</h6></p>
+        <p><h4 class="Cblue">Description</h4></p>
+        <p><h5>This method updates a existent customer from its id and taking his values from a form.</h5></p>
+      	<p><h4 class="Cblue">Parameters</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Name</th>
+      		<th>Located in</th>
+      		<th>Description</th>
+      		<th>Required</th>
+      		<th>Schema</th>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">id</td>
+      			<td>query</td>
+      			<td>Customer's identifier</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">number (int)</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">name</td>
+      			<td>query</td>
+      			<td>Name field of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">string</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">email</td>
+      			<td>query</td>
+      			<td>Email field of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">string</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">age</td>
+      			<td>query</td>
+      			<td>Age field of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">number (int)</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">gender</td>
+      			<td>query</td>
+      			<td>Gender type of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">enum (selector)</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">birthday</td>
+      			<td>query</td>
+      			<td>Birthday field of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">date (timestamp)</td>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">phone</td>
+      			<td>query</td>
+      			<td>Phone field of the customer's object</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">string (@phone)</td>
+      		</tr>
+      	</table>
+      	<p><h4 class="Cblue">Responses</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Code</th>
+      		<th>Description</th>
+      		</tr>
+      		<tr>
+      			<td class="Clime">200 OK</td>
+      			<td>Object updated satisfactory</td>
+      		</tr>
+      		<tr>
+      			<td class="Cred">404 NOT FOUND</td>
+      			<td><p>The identifier is incorrect:</p>
+      				<p>-Id = null</p>
+      				<p>-The id doesn't belong to any customer</p></td>
+      		</tr>
+      		<tr>
+      			<td class="Cgray">default</td>
+      			<td>Unexpected error</td>
+      		</tr>
+      	</table>
+      	<button class="hvr-float-shadow btn btn-default" id="tryButton" name="tryButton" type="button" data-toggle="collapse" data-target="#UPDATEcustomerREQ" aria-expanded="false" aria-controls="UPDATEcustomerId" onclick="DelDiv(4)">
+  		Try this operation
+		</button>
+		<div class="collapse" id="UPDATEcustomerREQ">
+  <div class="well">
+    <p><h4 class="Cgray">Request</h4></p>
+    <div class="form-group" name="UPDATEform" id="UPDATEform">
+    	<label class="control-label">Id</label>
+    	<input type="number" id="UPDATEcustid" name="UPDATEcustid" class="form-control" placeholder="Enter customer's id" />
+    	<p><small>Identifier of customer's object</small></p>
+    	<label class="control-label">Name</label>
+    	<input type="text" id="UPDATEcustname" name="UPDATEcustname" class="form-control" placeholder="Enter customer's name" />
+    	<p><small>Name field of customer's object</small></p>
+    	<label class="control-label">Email</label>
+    	<input type="text" id="UPDATEcustemail" name="UPDATEcustemail" class="form-control" placeholder="Enter customer's email" />
+    	<p><small>Email field of customer's object</small></p>
+    	<label class="control-label">Age</label>
+    	<input type="number" id="UPDATEcustage" name="UPDATEcustage" class="form-control" placeholder="Enter customer's age" />
+    	<p><small>Age field of customer's object</small></p>
+    	<label class="control-label">Gender</label>
+    	<select id="UPDATEcustgender" name="UPDATEcustgender" class="form-control">
+    		<option value="" label="Select Gender" />
+    		<option value="MALE" label="Male" />
+    		<option value="FEMALE" label="Female" />
+    	</select>
+    	<p><small>Gender type of customer's object</small></p>
+    	<label class="control-label">Birthday</label>
+    	<input type="date" id="UPDATEcustbirthday" name="UPDATEcustbirthday" class="form-control" />
+    	<p><small>Birthday field of customer's object</small></p>
+    	<label class="control-label">Phone</label>
+    	<input type="text" id="UPDATEcustphone" name="UPDATEcustphone" class="form-control" placeholder="Enter customer's phone" />
+    	<p><small>Phone field of customer's object</small></p>
+    </div>
+    <button class="hvr-buzz-out btn bnt-default" type="button" name="UPDbut" id="UPDbut" onclick="">
+  		Send request
+		</button>
+		<p><h4 class="Cgray">Response</h4></p>
+  		<div id="div4">
+  		</div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-primary">
+    <div class="panel-heading" role="tab" id="headingFive">
+      <h4 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" href="#DELETEcustomerId" aria-expanded="true" aria-controls="collapseFive">
+          DELETE/customer/id/
+        </a>
+      </h4>
+    </div>
+    <div id="DELETEcustomerId" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+      <div class="panel-body">
+        <p><h4 class="Cblue">Summary</h4></p>
+        <p><h6>Customer entity</h6></p>
+        <p><h4 class="Cblue">Description</h4></p>
+        <p><h5>This method delete a selected employee.</h5></p>
+      	<p><h4 class="Cblue">Parameters</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Name</th>
+      		<th>Located in</th>
+      		<th>Description</th>
+      		<th>Required</th>
+      		<th>Schema</th>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">id</td>
+      			<td>query</td>
+      			<td>Customer identifier</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">number (int)</td>
+      		</tr>
+      	</table>
+      	<p><h4 class="Cblue">Responses</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Code</th>
+      		<th>Description</th>
+      		</tr>
+      		<tr>
+      			<td class="Clime">200 OK</td>
+      			<td>A employee</td>
+      		</tr>
+      		<tr>
+      			<td class="Cred">404 NOT FOUND</td>
+      			<td><p>The identifier is incorrect:</p>
+      				<p>-Id = null</p>
+      				<p>-The id doesn't belong to any customer</p></td>
+      		</tr>
+      		<tr>
+      			<td class="Cgray">default</td>
+      			<td>Unexpected error</td>
+      		</tr>
+      	</table>
+      	<button class="hvr-float-shadow btn btn-default" id="tryButton" name="tryButton" type="button" data-toggle="collapse" data-target="#DELETEcustomerREQ" aria-expanded="false" aria-controls="DELETEcustomerREQ" onclick="DelDiv(5)">
+  		Try this operation
+		</button>
+<div class="collapse" id="DELETEcustomerREQ">
+  <div class="well">
+    <p><h4 class="Cgray">Request</h4></p>
+    <div class="form-group" name="formdelete" id="formdelete">
+    	<label class="control-label">Id</label>
+    	<input type="number" id="DELETEcustIdid" name="DELETEcustIdid" class="form-control" placeholder="It doesn't default value" />
+    	<span class="" id="DELicon" name="DELicon" aria-hidden="true"></span>
+  		<span id="inputError2Status" class="sr-only">(error)</span>
+    	<p><small>Customer identifier</small></p>
+    </div>
+    <button class="hvr-buzz-out btn bnt-default" name="DELbut" id="DELbut" type="button" onclick="">
+  		Send request
+		</button>
+		<p><h4 class="Cgray">Response</h4></p>
+  		<div id="div5">
+  		</div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+    <div class="panel panel-primary">
+    <div class="panel-heading" role="tab" id="headingSix">
+      <h4 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" href="#GETcustomerIdEmployee" aria-expanded="true" aria-controls="collapseSix">
+          GET/customer/id/employee
+        </a>
+      </h4>
+    </div>
+    <div id="GETcustomerIdEmployee" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+      <div class="panel-body">
+         <p><h4 class="Cblue">Summary</h4></p>
+        <p><h6>Customer entity</h6></p>
+        <p><h4 class="Cblue">Description</h4></p>
+        <p><h5>This method returns the employee of a customer.</h5></p>
+      	<p><h4 class="Cblue">Parameters</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Name</th>
+      		<th>Located in</th>
+      		<th>Description</th>
+      		<th>Required</th>
+      		<th>Schema</th>
+      		</tr>
+      		<tr>
+      			<td class="Clightblue">id</td>
+      			<td>query</td>
+      			<td>Customer identifier</td>
+      			<td>Yes</td>
+      			<td class="Cgreen">number (int)</td>
+      		</tr>
+      	</table>
+      	<p><h4 class="Cblue">Responses</h4></p>
+      	<table class="table">
+      		<tr class="active">
+      		<th>Code</th>
+      		<th>Description</th>
+      		</tr>
+      		<tr>
+      			<td class="Clime">200 OK</td>
+      			<td>A employee</td>
+      		</tr>
+      		<tr>
+      			<td class="Cred">404 NOT FOUND</td>
+      			<td><p>The identifier is incorrect:</p>
+      				<p>-Id = null</p>
+      				<p>-The id doesn't belong to any customer</p></td>
+      		</tr>
+      		<tr>
+      			<td class="Cgray">default</td>
+      			<td>Unexpected error</td>
+      		</tr>
+      	</table>
+      	<button class="hvr-float-shadow btn btn-default" id="tryButton" name="tryButton" type="button" data-toggle="collapse" data-target="#GETcustomerREQ3" aria-expanded="false" aria-controls="GETcustomerREQ3" onclick="DelDiv(6)">
+  		Try this operation
+		</button>
+<div class="collapse" id="GETcustomerREQ3">
+  <div class="well">
+    <p><h4 class="Cgray">Request</h4></p>
+    <div class="form-group" id="formGetIdEmployee">
+    	<label class="control-label">Id</label>
+    	<input type="number" id="GETcustIdidemp" name="GETcustIdidemp" class="form-control" placeholder="It doesn't default value" />
+    	<span class="" id="GETidempicon" name="GETidempicon" aria-hidden="true"></span>
+  		<span id="inputError2Status" class="sr-only">(error)</span>
+    	<p><small>Customer identifier</small></p>
+    </div>
+    <button class="hvr-buzz-out btn bnt-default" type="button" onclick="enviarGetCustomerIdEmployee()">
+  		Send request
+		</button>
+		<p><h4 class="Cgray">Response</h4></p>
+  		<div id="div6">
+  		</div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="col-md-3">
+<div class="fix container">
+	<div class="panel-heading panel ft"><h4><strong><u>REST methods</u></strong></h4></div>
+  			<div class="rightmenu btn-group-vertical">
+  				<table style="border-left:1px solid Beige">
+				<tr> 
+				<td>
+  				<p><a class="listb btn hvr-back-pulse" type="button" href="#GETcustomer"><strong class="Clightblue">GET</strong>/customer</a></p>
+  				<p><a class="listb btn hvr-back-pulse" type="button" href="#POSTcustomer"><strong class="Clightblue">POST</strong>/customer</a></p>
+ 				<p><a class="listb btn hvr-back-pulse" type="button" href="#GETcustomerId"><strong class="Clightblue">GET</strong>/customer/id</a></p>
+ 				<p><a class="listb btn hvr-back-pulse" type="button" href="#UPDATEcustomerId"><strong class="Clightblue">UPDATE</strong>/customer/id</a></p>
+ 				<p><a class="listb btn hvr-back-pulse" type="button" href="#DELETEcustomerId"><strong class="Clightblue">DELETE</strong>/customer/id</a></p>
+ 				<p><a class="listb btn hvr-back-pulse" type="button" href="#GETcustomerIdEmployee"><strong class="Clightblue">GET</strong>/customer/id/employee</a></p>
+			</td>
+			</tr>
+			</table>
+			</div>
+</div>
+</div>
+<!-- MODALS -->
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header mheader">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete confirmation</h4>
+            </div>
+            <div class="modal-body mbody">
+                <p>This method really remove a customer from database</p>
+                <p>Are you sure from this action?</p>
+            </div>
+            <div class="modal-footer mfoot">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" onClick="enviarDeleteCustomerId()">Delete Customer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="myModalUPDATE" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header mheader">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Update confirmation</h4>
+            </div>
+            <div class="modal-body mbody">
+                <p>This method really updates a customer of database</p>
+                <p>Are you sure from this action?</p>
+            </div>
+            <div class="modal-footer mfoot">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onClick="enviarUPDATECustomerId()">Update Customer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

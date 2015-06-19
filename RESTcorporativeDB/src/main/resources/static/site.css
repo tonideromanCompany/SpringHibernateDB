@@ -1,0 +1,138 @@
+body {font-family: Arial, Comic Sans, sans-serif;}
+
+html, body {
+  background-color: #04417d;
+}
+
+#degrade{
+	background-color: #55acee;; /* fallback color, place your own */ /* Gradients for modern browsers, replace as you see fit */ 
+  	background-image: -moz-linear-gradient(left, #55acee, #55acee); 
+  	background-image: -ms-linear-gradient(left, #55acee, #55acee); 
+  	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#55acee), to(#55acee)); 
+  	background-image: -webkit-linear-gradient(left, #55acee, #55acee); 
+  	background-image: -o-linear-gradient(left, #55acee, #55acee); 
+  	background-image: linear-gradient(to right, #55acee, #55acee); 
+  	background-repeat: repeat-x; /* IE8-9 gradient filter */ 
+  	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#55acee', endColorstr='#55acee', GradientType=1);
+}
+
+.panel{
+	margin: 0px !important;
+}
+.navbar{
+	margin-bottom: 0px !important;
+	min-height: 10px !important;
+	border: 3px #55acee;
+}
+.navbar-default{
+	background-color: #d2d2d2;
+	background-image: none;
+	color: #000000;
+	text-align: center;
+}
+.col-md-9{
+	padding-top: 20px;
+	padding-right: 20px;
+	padding-left: 20px;
+}
+.col-md-3{
+	padding-top: 20px;
+	padding-right: 0px;
+	padding-left: 0px;
+}
+.rightmenu{ 
+}
+.Clightblue{
+	color: DodgerBlue;
+	font-weight: bold;
+}
+.Cblue{
+	color: #3072AC;
+	font-weight: bold;
+}
+.Cgray{
+	color: Gray;
+	font-weight: bold;
+}
+.Cred{
+	color: Red;
+	font-weight: bold;
+}
+.Cgreen{
+	color: Green;
+}
+.Clime{
+	color: LimeGreen;
+	font-weight: bold;
+}
+.Cblack{
+	color: black;
+}
+.CwhiteL{
+	color: Beige;
+	font-weight: bold;
+	font-size: 30px;
+}
+.Cwhiteicon{
+	color: Beige;
+	font-weight: bold;
+	font-size: 30px;
+	margin-right: 10px;
+}
+.glyphicon{
+	padding-top: 2px;
+}
+.fix{
+	position: fixed;
+}
+.right{
+	float: right;	
+}
+.sendR{
+	border: 1px #737373 solid;
+	border-radius: 3px;
+	width: 137px;
+	height: 34px;
+}
+.infb{
+	background-color: #55acee;
+	border: 3px #55acee;
+}
+.listb.btn{
+	background: #04417d;
+}
+.btn-group-vertical>.btn{
+	width: 280px;
+}
+.fix.container{
+	width: 300px;
+}
+.listb.btn.hvr-back-pulse{
+	text-align: left;
+	color: DodgeBlue;	
+}
+.panel-heading.panel.ft{
+	heigh: 30 px;
+	padding: 0px !important;
+	background-color: #04417d;
+	color: Beige;
+	text-weight: bold;
+}
+.fix.panel.panel-default{
+	margin-top: 300px;
+}
+.t.table{
+	border-left: 2px #ff0000;
+	text-align: left;
+}
+.modal-header.mheader{
+	background-color: #55acee;
+	color: Beige;
+}
+.modal-body.mbody{
+	background-color: #04417d;
+	color: Beige;
+}
+.modal-footer.mfoot{
+	background-color: #04417d;
+}
