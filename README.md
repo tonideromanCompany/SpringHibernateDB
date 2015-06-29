@@ -9,7 +9,7 @@ WebApps using different technologies, in common Spring and Hibernate.
   *JSP
   *Bootstrap & Hover
   *Maven build
--RESTcorporativeDB
+-RESTcorporativeDB:
   *RESTful application
   *Spring framework
   *Hibernate
@@ -18,7 +18,7 @@ WebApps using different technologies, in common Spring and Hibernate.
   *Bootstrap & Hover
   *Spring-boot application
   *Maven build
--RESTandANGULAR
+-RESTandANGULAR:
   *RESTful application
   *Spring framework
   *Hibernate
