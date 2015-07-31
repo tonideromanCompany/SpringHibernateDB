@@ -25,6 +25,6 @@ WebApps using different technologies, in common Spring and Hibernate.
  <s></s><p> *JPA validation</p>
  <s></s><p> *MySQL Server database</p>
  <s></s><p> *ANGULAR JS (HTML & JS)</p>
-  *Bootstrap & Hover</p>
-  *Spring-boot application</p>
-  *Maven build</p>
+  <s></s><p> *Bootstrap & Hover</p>
+  <s></s><p> *Spring-boot application</p>
+  <s></s><p> *Maven build</p>
