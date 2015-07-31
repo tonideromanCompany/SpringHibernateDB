@@ -1,8 +1,8 @@
 # SpringHibernateDB
 WebApps using different technologies, in common Spring and Hibernate.
 
--SpringHibernateDB:
-  *Spring framework
+-SpringHibernateDB:</ br>
+  <p>*Spring framework</p>
   *Hibernate
   *JPA validation
   *MySQL Server database
